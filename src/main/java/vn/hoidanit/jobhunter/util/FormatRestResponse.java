@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import jakarta.servlet.http.HttpServletResponse;
-import vn.hoidanit.jobhunter.domain.RestRespone;
+import vn.hoidanit.jobhunter.domain.RestResponse;
 
 @ControllerAdvice
-public class FormatRestRespone implements ResponseBodyAdvice<Object> {
+public class FormatRestResponse implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
@@ -26,17 +26,20 @@ public class FormatRestRespone implements ResponseBodyAdvice<Object> {
             Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
-        RestRespone<Object> restRespone = new RestRespone<Object>();
-        restRespone.setStatusCode(status);
+        RestResponse<Object> restResponse = new RestResponse<Object>();
+        restResponse.setStatusCode(status);
+        if (body instanceof String) {
+            return body;
+        }
         if (status >= 400) {
             // case error
             return body;
         } else {
             // case success
-            restRespone.setData(body);
-            restRespone.setMessage("Call API success");
+            restResponse.setData(body);
+            restResponse.setMessage("Call API success");
         }
-        return restRespone;
+        return restResponse;
     }
 
 }
