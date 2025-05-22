@@ -10,4 +10,5 @@ public class ResLoginDTO {
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
+
 }
