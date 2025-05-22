@@ -48,7 +48,7 @@ public class SecurityUtil {
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
-    public String createAccessToken(Authentication authentication, UserLogin userLogin) {
+    public String createAccessToken(String email, UserLogin userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
@@ -56,7 +56,7 @@ public class SecurityUtil {
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
-            .subject(authentication.getName())
+            .subject(email)
             .claim("user", userLogin)
             .build();
 
@@ -78,7 +78,7 @@ public class SecurityUtil {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(email)
-            .claim("user", resLoginDTO.getUserLogin())
+            .claim("user", resLoginDTO.getUser())
             .claim("permission", listAuthorities)
             .build();
 
