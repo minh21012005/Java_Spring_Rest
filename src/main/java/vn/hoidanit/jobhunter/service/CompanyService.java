@@ -1,5 +1,6 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -8,53 +9,70 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
-import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO.Meta;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
+import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
-    public CompanyService(CompanyRepository companyRepository) {
+    public CompanyService(
+            CompanyRepository companyRepository,
+            UserRepository userRepository) {
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
     }
 
-    public Company createCompany(Company company) {
-        return this.companyRepository.save(company);
+    public Company handleCreateCompany(Company c) {
+        return this.companyRepository.save(c);
     }
 
-    public ResultPaginationDTO getAllCompanies(Specification<Company> specification, Pageable pageable) {
-        ResultPaginationDTO resultPaginationDTO = new ResultPaginationDTO();
-        Page<Company> page = this.companyRepository.findAll(specification, pageable);
-        Meta meta = new Meta();
-        meta.setPage(pageable.getPageNumber() + 1);
-        meta.setPageSize(pageable.getPageSize());
-        meta.setPages(page.getTotalPages());
-        meta.setTotal(page.getTotalElements());
-        resultPaginationDTO.setMeta(meta);
-        resultPaginationDTO.setResult(page.getContent());
-        return resultPaginationDTO;
+    public ResultPaginationDTO handleGetCompany(Specification<Company> spec, Pageable pageable) {
+        Page<Company> pCompany = this.companyRepository.findAll(spec, pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pCompany.getTotalPages());
+        mt.setTotal(pCompany.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pCompany.getContent());
+        return rs;
     }
 
-    public Company updateCompany(Company company) {
-        Optional<Company> c = this.companyRepository.findById(company.getId());
-        if (c.isPresent()) {
-            Company currentCompany = c.get();
-            currentCompany.setName(company.getName());
-            currentCompany.setAddress(company.getAddress());
-            currentCompany.setDescription(company.getDescription());
-            currentCompany.setLogo(company.getLogo());
+    public Company handleUpdateCompany(Company c) {
+        Optional<Company> companyOptional = this.companyRepository.findById(c.getId());
+        if (companyOptional.isPresent()) {
+            Company currentCompany = companyOptional.get();
+            currentCompany.setLogo(c.getLogo());
+            currentCompany.setName(c.getName());
+            currentCompany.setDescription(c.getDescription());
+            currentCompany.setAddress(c.getAddress());
             return this.companyRepository.save(currentCompany);
         }
         return null;
     }
 
-    public void deleteCompany(long id) {
-        Optional<Company> com = this.companyRepository.findById(id);
-        if (com.isPresent()) {
-            this.companyRepository.delete(com.get());
+    public void handleDeleteCompany(long id) {
+        Optional<Company> comOptional = this.companyRepository.findById(id);
+        if (comOptional.isPresent()) {
+            Company com = comOptional.get();
+            // fetch all user belong to this company
+            List<User> users = this.userRepository.findByCompany(com);
+            this.userRepository.deleteAll(users);
         }
+
+        this.companyRepository.deleteById(id);
+    }
+
+    public Optional<Company> findById(long id) {
+        return this.companyRepository.findById(id);
     }
 }

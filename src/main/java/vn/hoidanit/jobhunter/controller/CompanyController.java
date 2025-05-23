@@ -37,7 +37,7 @@ public class CompanyController {
 
     @PostMapping("/companies")
     public ResponseEntity<Company> createCompany(@Valid @RequestBody Company company) {
-        this.companyService.createCompany(company);
+        this.companyService.handleCreateCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(company);
     }
 
@@ -45,18 +45,18 @@ public class CompanyController {
     @ApiMessage("Fetch all companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(@Filter Specification<Company> specification,
             Pageable pageable) {
-        return ResponseEntity.ok().body(this.companyService.getAllCompanies(specification, pageable));
+        return ResponseEntity.ok().body(this.companyService.handleGetCompany(specification, pageable));
     }
 
     @PutMapping("/companies")
     public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company company) {
-        Company c = this.companyService.updateCompany(company);
+        Company c = this.companyService.handleUpdateCompany(company);
         return ResponseEntity.ok().body(c);
     }
 
     @DeleteMapping("/companies/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
-        this.companyService.deleteCompany(id);
+        this.companyService.handleDeleteCompany(id);
         return ResponseEntity.ok().body(null);
     }
 
