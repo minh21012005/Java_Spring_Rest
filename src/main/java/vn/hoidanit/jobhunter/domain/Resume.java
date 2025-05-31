@@ -28,10 +28,10 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Email ko dc de trong")
+    @NotBlank(message = "email không được để trống")
     private String email;
 
-    @NotBlank(message = "url ko dc de trong(upload CV chua thanh cong)")
+    @NotBlank(message = "url không được để trống (upload cv chưa thành công)")
     private String url;
 
     @Enumerated(EnumType.STRING)

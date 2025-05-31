@@ -3,6 +3,8 @@ package vn.hoidanit.jobhunter.domain.response;
 public class RestResponse<T> {
     private int statusCode;
     private String error;
+
+    // message có thể là string, hoặc arrayList
     private Object message;
     private T data;
 
@@ -37,4 +39,5 @@ public class RestResponse<T> {
     public void setData(T data) {
         this.data = data;
     }
+
 }

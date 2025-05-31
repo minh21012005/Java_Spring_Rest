@@ -1,9 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -28,7 +26,6 @@ import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 @RestController
 @RequestMapping("/api/v1")
 public class CompanyController {
-
     private final CompanyService companyService;
 
     public CompanyController(CompanyService companyService) {
@@ -36,35 +33,35 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
-    public ResponseEntity<Company> createCompany(@Valid @RequestBody Company company) {
-        this.companyService.handleCreateCompany(company);
-        return ResponseEntity.status(HttpStatus.CREATED).body(company);
+    public ResponseEntity<?> createCompany(@Valid @RequestBody Company reqCompany) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleCreateCompany(reqCompany));
     }
 
     @GetMapping("/companies")
-    @ApiMessage("Fetch all companies")
-    public ResponseEntity<ResultPaginationDTO> getAllCompanies(@Filter Specification<Company> specification,
-            Pageable pageable) {
-        return ResponseEntity.ok().body(this.companyService.handleGetCompany(specification, pageable));
+    @ApiMessage("Fetch companies")
+    public ResponseEntity<ResultPaginationDTO> getCompany(
+            @Filter Specification<Company> spec, Pageable pageable) {
+
+        return ResponseEntity.ok(this.companyService.handleGetCompany(spec, pageable));
     }
 
     @PutMapping("/companies")
-    public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company company) {
-        Company c = this.companyService.handleUpdateCompany(company);
-        return ResponseEntity.ok().body(c);
+    public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company reqCompany) {
+        Company updatedCompany = this.companyService.handleUpdateCompany(reqCompany);
+        return ResponseEntity.ok(updatedCompany);
     }
 
     @DeleteMapping("/companies/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
         this.companyService.handleDeleteCompany(id);
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/companies/{id}")
     @ApiMessage("fetch company by id")
     public ResponseEntity<Company> fetchCompanyById(@PathVariable("id") long id) {
-        Optional<Company> optional = this.companyService.findById(id);
-        return ResponseEntity.ok().body(optional.get());
+        Optional<Company> cOptional = this.companyService.findById(id);
+        return ResponseEntity.ok().body(cOptional.get());
     }
-
 }
