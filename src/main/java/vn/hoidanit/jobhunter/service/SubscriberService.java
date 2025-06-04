@@ -34,6 +34,11 @@ public class SubscriberService {
         this.emailService = emailService;
     }
 
+    // @Scheduled(cron = "*/10 * * * * *")
+    // public void testCron() {
+    // System.out.println(">>> TEST CRON");
+    // }
+
     public boolean isExistsByEmail(String email) {
         return this.subscriberRepository.existsByEmail(email);
     }
@@ -108,8 +113,7 @@ public class SubscriberService {
         }
     }
 
-    @Scheduled(cron = "*/10 * * * * *")
-    public void testCron() {
-        System.out.println("TEST CRON");
+    public Subscriber findByEmail(String email) {
+        return this.subscriberRepository.findByEmail(email);
     }
 }
