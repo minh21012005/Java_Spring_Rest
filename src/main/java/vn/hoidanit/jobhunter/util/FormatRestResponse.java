@@ -36,14 +36,16 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         res.setStatusCode(status);
 
         String path = request.getURI().getPath();
+
         if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
             return body;
         }
-
+        // ko nên format hiển thị, để frontend tự format
         if (body instanceof String || body instanceof Resource) {
             return body;
         }
 
+        // chỉ nên format ở đây trở đi
         if (status >= 400) {
             return body;
         } else {
